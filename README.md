@@ -1,16 +1,27 @@
-# React + Vite
+# Mon Pokédex
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Application React en français pour consulter les Pokémon, filtrer leur liste par type et afficher leurs statistiques. Les données proviennent de PokéAPI et les noms affichés sont en français.
 
-Currently, two official plugins are available:
+## Démarrage
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Exécuter `npm install`, puis `npm run dev` pour démarrer le serveur de développement.
 
-## React Compiler
+## Vérification
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Exécuter `npm run lint` pour analyser le code et `npm run build` pour compiler l’application. La commande `npm run preview` permet de prévisualiser la version compilée.
 
-## Expanding the ESLint configuration
+## Fonctionnalités
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Liste paginée, filtrage par type et recherche par nom partiel. La recherche du catalogue officiel utilise les identifiants de l’API, par exemple « pika ».
+
+La fiche détaillée propose une description, les talents, les statistiques de base et leurs maxima théoriques, les faiblesses et résistances, la famille d’évolution, un aperçu des capacités et les informations de reproduction. Les ressources sont mises en cache pendant la session. Une rubrique indisponible ne bloque pas les autres.
+
+Le bouton « Ajouter un Pokémon » ouvre un formulaire de création : nom, illustration facultative, types, taille, poids, description, talent et six statistiques. Après l’enregistrement, la fiche s’ouvre et le Pokémon apparaît dans « Mes créations » sur l’accueil. Les filtres et la recherche s’appliquent aussi aux créations.
+
+Les créations sont enregistrées dans le stockage local du navigateur. Elles ne sont pas synchronisées entre appareils et sont supprimées si les données du site sont effacées. Elles ne modifient pas le catalogue officiel. Les données officielles nécessitent une connexion à Internet.
+
+## Tests fonctionnels
+
+Exécuter `node --test tests/pokemon.test.js` pour vérifier la sauvegarde des créations, les noms français, le cache, les défenses à deux types et les maxima des statistiques.
+
+Structure des données : [documentation officielle de PokéAPI](https://pokeapi.co/docs/v2).
