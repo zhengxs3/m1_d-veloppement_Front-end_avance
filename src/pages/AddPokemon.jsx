@@ -39,8 +39,9 @@ export default function AddPokemon() {
       navigate(`/poke/${pokemon.id}`);
     } catch (error) {
       setError(
-        error.response?.data?.error ||
-          "Impossible d’enregistrer ce Pokémon. Vérifiez que le serveur de créations est accessible, puis réessayez.",
+        typeof error.response?.data?.error === "string" && error.response.data.error.trim()
+          ? error.response.data.error
+          : "Impossible d’enregistrer ce Pokémon. Vérifiez que le serveur de créations est accessible, puis réessayez.",
       );
       setSaving(false);
     }

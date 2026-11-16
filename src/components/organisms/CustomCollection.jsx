@@ -53,8 +53,9 @@ export default function CustomCollection({ selectedType, query }) {
       setPokemons(await importLegacyPokemons(pending));
     } catch (error) {
       setError(
-        error.response?.data?.error ||
-          "Import impossible. Les anciennes créations restent dans ce navigateur.",
+        typeof error.response?.data?.error === "string" && error.response.data.error.trim()
+          ? error.response.data.error
+          : "Import impossible. Les anciennes créations restent dans ce navigateur.",
       );
     } finally {
       setImporting(false);

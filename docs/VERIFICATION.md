@@ -9,14 +9,14 @@ Date : 16 novembre 2026.
 | ESLint                      | Aucune erreur.                                                                                    |
 | Tests unitaires             | 4 tests Jest réussis : statistiques maximales et multiplicateurs de défense.                      |
 | Tests de services           | 9 tests Jest réussis avec appels Axios mockés.                                                    |
-| Tests fonctionnels frontend | 6 tests Jest et Testing Library réussis : recherche et formulaire de création dans jsdom.         |
+| Tests fonctionnels frontend | 8 tests Jest et Testing Library réussis : recherche et formulaire de création dans jsdom.         |
 | Tests fonctionnels backend  | 29 vérifications réussies avec Symfony et une base SQLite temporaire.                             |
 | Configuration Composer      | `composer validate --strict` valide la cohérence du manifeste et du verrouillage.                 |
 | Build Vite                  | Réussi ; pages Home, AddPokemon, PokemonDetails et NotFound produites dans des modules distincts. |
 
-Les 19 tests frontend sont exécutés avec `npm test`, via Jest. Les suites sont regroupées avec `describe` et `it`, les résultats sont vérifiés avec `expect` et les interactions utilisent Testing Library. `npm run test:coverage` produit le rapport HTML dans `coverage/index.html`.
+Les 21 tests frontend sont exécutés avec `npm test`, via Jest. Les suites sont regroupées avec `describe` et `it`, les résultats sont vérifiés avec `expect` et les interactions utilisent Testing Library. `npm run test:coverage` produit le rapport HTML dans `coverage/index.html`.
 
-Le rapport mesure 30,81 % des lignes du frontend : les calculs de statistiques et le service du catalogue sont couverts à 100 % des lignes, mais plusieurs écrans restent non couverts. Ce pourcentage décrit la portée actuelle des tests et ne garantit pas l’absence de bugs.
+Le premier rapport, avant les deux tests de non-régression des erreurs de plateforme, mesurait 30,81 % des lignes du frontend : les calculs de statistiques et le service du catalogue sont couverts à 100 % des lignes, mais plusieurs écrans restent non couverts. Ce pourcentage décrit la portée actuelle des tests et ne garantit pas l’absence de bugs.
 
 Sur ce poste, PHP ne charge pas SQLite par défaut. La commande utilisée pour les vérifications backend est :
 

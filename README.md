@@ -71,7 +71,7 @@ Le tableau indique les éléments implémentés ; la note finale dépend de la v
 | -------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Site en ligne                                      | 1      | Configuration Vercel présente. Adresse publique et fonctionnement du backend à confirmer avant la remise.                                              |
 | Pipeline CI/CD                                     | 2      | `.github/workflows/ci.yml` vérifie le frontend et le backend ; le déploiement dépend du succès des deux jobs et de la configuration des secrets.       |
-| 2 tests unitaires et 2 tests fonctionnels minimum  | 2      | Jest : 4 tests unitaires, 9 tests de services mockés et 6 tests fonctionnels avec Testing Library et jsdom. Le backend possède aussi 29 vérifications. |
+| 2 tests unitaires et 2 tests fonctionnels minimum  | 2      | Jest : 4 tests unitaires, 9 tests de services mockés et 8 tests fonctionnels avec Testing Library et jsdom. Le backend possède aussi 29 vérifications. |
 | Optimisation des performances                      | 1      | `React.lazy`, `Suspense`, cache des ressources et rubriques de détail chargées à la demande.                                                           |
 | KISS et qualité du code                            | 1      | Responsabilités séparées, fonctions pures, composants réutilisables, ESLint et Prettier.                                                               |
 | Gestion d’état moderne                             | 1      | État de navigation dans l’URL avec `useSearchParams` ; état local avec les hooks.                                                                      |
@@ -144,7 +144,7 @@ npm run build
 | -------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | Unitaire             | `npm run test:unit`        | 4 tests Jest : statistiques maximales et combinaison des faiblesses/résistances/immunités.                               |
 | Services             | `npm run test:integration` | 9 tests Jest : cache, nouvelle tentative, sauvegarde et import avec les appels Axios mockés.                             |
-| Fonctionnel frontend | `npm run test:functional`  | 6 tests Jest et Testing Library : recherche, réinitialisation, sauvegarde, navigation et erreur du formulaire.           |
+| Fonctionnel frontend | `npm run test:functional`  | 8 tests Jest et Testing Library : recherche, réinitialisation, sauvegarde, navigation et erreur du formulaire.           |
 | Fonctionnel backend  | `npm run test:backend`     | 29 vérifications avec le noyau Symfony et une base SQLite temporaire : routes, validation, persistance, imports et CORS. |
 
 Les tests suivent la méthode du cours : `describe`, `it`, `expect`, mocks, `beforeEach` et scénarios Given / When / Then. Testing Library simule les interactions dans jsdom ; aucun navigateur réel ni serveur externe n’est nécessaire. Les tests backend vérifient séparément le stockage réel. Voir [le guide des tests](docs/TESTS.md) pour les scénarios, les commandes et le rapport de couverture.

@@ -36,6 +36,24 @@ describe("AddPokemon — tests fonctionnels du formulaire", () => {
     expect(saveCustomPokemon).not.toHaveBeenCalled();
   });
 
+  it("reste affiché si la plateforme renvoie une erreur sous forme d’objet", async () => {
+    // Given : Vercel retourne une erreur structurée quand le backend n’est pas configuré.
+    saveCustomPokemon.mockRejectedValue({
+      response: { status: 404, data: { error: { code: "NOT_FOUND", message: "Not Found" } } },
+    });
+    const utilisateur = userEvent.setup();
+    await remplirFormulaire(utilisateur);
+    // When : l’utilisateur soumet le formulaire.
+    await utilisateur.click(screen.getByRole("button", { name: /Ajouter à mon Pokédex/ }));
+    // Then : un texte français remplace l’objet, sans faire disparaître la page.
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Impossible d’enregistrer ce Pokémon. Vérifiez que le serveur de créations est accessible, puis réessayez.",
+    );
+    expect(screen.getByLabelText("Nom du Pokémon *")).toHaveValue("Floréa");
+    expect(screen.getByLabelText("Adresse actuelle")).toHaveTextContent("/add");
+    expect(screen.getByRole("button", { name: /Ajouter à mon Pokédex/ })).toBeEnabled();
+  });
+
   it("enregistre les données valides puis navigue vers la fiche créée", async () => {
     // Given : l’API simulée accepte un Pokémon et retourne son identifiant.
     saveCustomPokemon.mockResolvedValue({ id: "perso-florea", nom: "Floréa" });
