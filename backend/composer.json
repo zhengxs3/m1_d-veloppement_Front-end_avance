@@ -1,0 +1,25 @@
+{
+  "name": "pokedex/learning-api",
+  "description": "Learning API built with Symfony components and SQLite",
+  "type": "project",
+  "license": "proprietary",
+  "require": {
+    "php": "^8.2",
+    "ext-pdo": "*",
+    "ext-pdo_sqlite": "*",
+    "symfony/http-kernel": "7.4.*",
+    "symfony/routing": "7.4.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/"
+    }
+  },
+  "scripts": {
+    "test": "@php tests/api.php",
+    "start": "@php start.php"
+  },
+  "config": {
+    "sort-packages": true
+  }
+}

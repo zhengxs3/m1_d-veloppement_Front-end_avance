@@ -1,16 +1,25 @@
 // Conserver les identifiants de l'API et afficher les libellés français.
-import { TYPE_LABELS } from "../data/translations";
+import { TYPE_LABELS } from "../../data/translations";
 
 const TYPES = [
-  ["fire", "🔥"], ["water", "💧"],
-  ["grass", "🌿"], ["flying", "🪽"],
-  ["electric", "⚡"], ["ice", "❄️"],
-  ["normal", "⭐"], ["fighting", "🥊"],
-  ["poison", "🧪"], ["ground", "🏜️"],
-  ["rock", "🪨"], ["bug", "🐛"],
-  ["psychic", "🔮"], ["ghost", "👻"],
-  ["dragon", "🐉"], ["dark", "🌙"],
-  ["steel", "⚙️"], ["fairy", "✨"],
+  ["fire", "🔥"],
+  ["water", "💧"],
+  ["grass", "🌿"],
+  ["flying", "🪽"],
+  ["electric", "⚡"],
+  ["ice", "❄️"],
+  ["normal", "⭐"],
+  ["fighting", "🥊"],
+  ["poison", "🧪"],
+  ["ground", "🏜️"],
+  ["rock", "🪨"],
+  ["bug", "🐛"],
+  ["psychic", "🔮"],
+  ["ghost", "👻"],
+  ["dragon", "🐉"],
+  ["dark", "🌙"],
+  ["steel", "⚙️"],
+  ["fairy", "✨"],
 ];
 
 function TypeFilter({ selectedType, onSelect }) {
@@ -24,9 +33,9 @@ function TypeFilter({ selectedType, onSelect }) {
             type="button"
             aria-pressed={selectedType === type}
             onClick={() => onSelect(type)}
-            className={`rounded-xl shadow-md px-4 py-3 font-semibold transition focus-visible:outline-2 focus-visible:outline-emerald-400 ${
+            className={`rounded-xl shadow-md px-4 py-3 font-semibold transition focus-visible:outline-2 focus-visible:outline-violet-400 ${
               selectedType === type
-                ? "bg-emerald-200 text-emerald-950 ring-1 ring-emerald-300 hover:bg-emerald-300"
+                ? "bg-violet-200 text-violet-950 ring-1 ring-violet-300 hover:bg-violet-300"
                 : "bg-white text-gray-700 hover:bg-gray-100 hover:shadow-xl"
             }`}
           >

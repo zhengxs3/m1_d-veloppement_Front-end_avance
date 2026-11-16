@@ -1,0 +1,86 @@
+name: Vérification et déploiement du Pokédex
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  frontend:
+    name: Qualité et tests du frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run format:check
+      - name: Tests Jest et couverture du code
+        run: npm run test:coverage
+      - run: npm run build
+      - name: Conserver le rapport de couverture
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: couverture-jest
+          path: coverage/
+          retention-days: 7
+
+  backend:
+    name: Vérification de l’API et de la persistance
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: pdo_sqlite, mbstring
+          coverage: none
+      - run: composer install --no-interaction --prefer-dist --no-progress
+      - run: composer validate --strict
+      - run: composer test
+
+  deploy:
+    name: Déploiement Vercel après validation
+    needs: [frontend, backend]
+    if: >-
+      github.event_name == 'push' &&
+      github.ref_name == (vars.PRODUCTION_BRANCH || 'main') &&
+      vars.DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: deploiement-production
+      cancel-in-progress: false
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Vérifier la configuration de publication
+        run: |
+          test -n "$VERCEL_TOKEN" || { echo "Secret VERCEL_TOKEN manquant"; exit 1; }
+          test -n "$VERCEL_ORG_ID" || { echo "Secret VERCEL_ORG_ID manquant"; exit 1; }
+          test -n "$VERCEL_PROJECT_ID" || { echo "Secret VERCEL_PROJECT_ID manquant"; exit 1; }
+      - run: npm ci
+      - name: Installer la CLI Vercel
+        run: npm install --global vercel@latest
+      - name: Récupérer les paramètres de production
+        run: vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+      - name: Construire les fichiers de production
+        run: vercel build --prod --token="$VERCEL_TOKEN"
+      - name: Publier les fichiers validés
+        run: vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"

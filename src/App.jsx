@@ -1,11 +1,12 @@
-
 import { Routes, Route } from "react-router-dom";
+import { lazy, Suspense } from "react";
 
 // Importer le menu de navigation.
-import Navbar from "./components/Navbar.jsx";
-import Home from "./pages/Home.jsx";
-import PokeDetails from "./pages/PokeDetails.jsx";
-import AddPokemon from "./pages/AddPokemon.jsx";
+import Navbar from "./components/organisms/Navbar.jsx";
+const Home = lazy(() => import("./pages/Home.jsx"));
+const PokeDetails = lazy(() => import("./pages/PokemonDetails.jsx"));
+const AddPokemon = lazy(() => import("./pages/AddPokemon.jsx"));
+const NotFound = lazy(() => import("./pages/NotFound.jsx"));
 
 function App() {
   return (
@@ -15,19 +16,26 @@ function App() {
 
       {/* Contenu de la page */}
       <main className="max-w-6xl mx-auto p-6">
-
         {/* Afficher la page correspondant à l'URL */}
-        <Routes>
-          {/* Accueil */}
-          <Route path="/" element={<Home />} />
+        <Suspense
+          fallback={
+            <p role="status" className="detail-loading">
+              Chargement de la page…
+            </p>
+          }
+        >
+          <Routes>
+            {/* Accueil */}
+            <Route path="/" element={<Home />} />
 
-          {/* Fiche du Pokémon ; :id est un paramètre dynamique */}
-          <Route path="/poke/:id" element={<PokeDetails />} />
+            {/* Fiche du Pokémon ; :id est un paramètre dynamique */}
+            <Route path="/poke/:id" element={<PokeDetails />} />
 
-          {/* Page d'ajout de Pokémon */}
-          <Route path="/add" element={<AddPokemon />} />
-        </Routes>
-
+            {/* Page d'ajout de Pokémon */}
+            <Route path="/add" element={<AddPokemon />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
       </main>
     </>
   );
