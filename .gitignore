@@ -37,8 +37,6 @@ build/
 
 # Local dependency caches
 .npm-cache/
-.composer-cache/
-.composer/
 
 # Rapports de couverture des tests Jest
 coverage/

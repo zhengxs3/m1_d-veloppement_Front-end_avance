@@ -1,8 +1,12 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import SearchBar from "../../src/components/molecules/SearchBar";
+import SearchBar from "./SearchBar";
 
-describe("SearchBar — tests fonctionnels de la recherche", () => {
+describe("SearchBar Integration Test Suites", () => {
   let rechercher;
   let reinitialiser;
 

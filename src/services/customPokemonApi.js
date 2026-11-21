@@ -22,6 +22,15 @@ export async function saveCustomPokemon(pokemon) {
   return data;
 }
 
+export async function updateCustomPokemon(id, pokemon) {
+  const { data } = await customApi.put(`/pokemons/${encodeURIComponent(id)}`, pokemon);
+  return data;
+}
+
+export async function deleteCustomPokemon(id) {
+  await customApi.delete(`/pokemons/${encodeURIComponent(id)}`);
+}
+
 // Lecture seule : les anciennes créations ne sont ni effacées ni importées sans clic.
 export function getLegacyPokemons() {
   try {

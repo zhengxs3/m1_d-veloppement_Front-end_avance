@@ -1,20 +1,24 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import CustomCollection from "../../src/components/organisms/CustomCollection";
+import CustomCollection from "./CustomCollection";
 import {
   getCustomPokemons,
   getLegacyPokemons,
   importLegacyPokemons,
-} from "../../src/services/customPokemonApi";
+} from "../../services/customPokemonApi";
 
-jest.mock("../../src/services/customPokemonApi", () => ({
+jest.mock("../../services/customPokemonApi", () => ({
   getCustomPokemons: jest.fn(),
   getLegacyPokemons: jest.fn(),
   importLegacyPokemons: jest.fn(),
   getPokemonImage: jest.fn(),
 }));
 
-describe("CustomCollection — erreurs de plateforme pendant l’import", () => {
+describe("CustomCollection Integration Test Suites", () => {
   it("affiche un message français sans écran blanc si l’erreur est un objet", async () => {
     // Given : une ancienne création est disponible et la plateforme refuse l’import.
     const ancienneCreation = { id: "perso-ancien", nom: "Ancien", types: [], stats: [] };

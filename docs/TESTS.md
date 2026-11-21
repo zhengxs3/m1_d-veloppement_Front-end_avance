@@ -25,11 +25,11 @@ npm run test:coverage
 npm run test:watch
 ```
 
-`jest.config.cjs` configure Jest et l’environnement DOM simulé `jsdom`. `babel.config.cjs` transforme les imports et le JSX pour Jest. L’adaptation de `import.meta.env` sert uniquement à lire les variables de test sans le serveur Vite. `tests/setup.js` active les assertions DOM comme `toBeInTheDocument` et `toHaveValue`.
+`jest.config.cjs` configure Jest (tests `*.test.js` placés dans `src/`) ; chaque fichier qui a besoin du DOM le déclare avec `/** @jest-environment jsdom */`, comme dans le cours. `babel.config.cjs` transforme les imports et le JSX pour Jest. L’adaptation de `import.meta.env` sert uniquement à lire les variables de test sans le serveur Vite. `tests/setup.js` active les assertions DOM comme `toBeInTheDocument` et `toHaveValue`.
 
 ## Tests unitaires
 
-Fichier : `tests/unit/domain.test.js`.
+Fichiers : `src/services/stats.unit.test.js` et `src/services/pokemonSections.unit.test.js`.
 
 ### Premier scénario : calcul des PV maximaux
 
@@ -50,7 +50,7 @@ Les autres cas couvrent la nature favorable pour l’attaque, le cas particulier
 
 ## API et données mockées
 
-Fichier : `tests/integration/services.test.js`.
+Fichiers : `src/services/api.integration.test.js`, `customPokemonApi.integration.test.js` et `pokemonSections.integration.test.js`.
 
 ### Scénario : récupérer les données françaises d’une fiche
 
@@ -64,7 +64,7 @@ Ce principe correspond à l’exercice du cours sur `retrieveSensorsData` : vér
 
 ## Tests fonctionnels et d’intégration du DOM
 
-Fichiers : `tests/functional/SearchBar.test.jsx` et `tests/functional/AddPokemon.test.jsx`.
+Fichiers : `SearchBar`, `Pagination`, `Navbar` (snapshot) et `CustomCollection` dans `src/components/`, `AddPokemon` (ajout et modification) et `PokemonDetails` (suppression) dans `src/pages/`, tous nommés `*.integration.test.jsx` à côté du composant.
 
 Comme pour le formulaire de connexion du cours, les tests imitent les actions d’un utilisateur et vérifient le résultat dans la page.
 
@@ -104,6 +104,6 @@ Comme dans le cours, le pourcentage indique les lignes et branches exécutées, 
 
 jsdom simule le DOM : il n’ouvre pas de navigateur réel et ne vérifie pas la mise en page. Les mocks isolent le frontend des serveurs externes. Les tests de formulaire contrôlent l’appel au service et le changement de route ; ils ne prouvent pas qu’un serveur de production a enregistré les données.
 
-`npm run test:backend` exécute séparément 29 vérifications PHP avec Symfony et une vraie base SQLite temporaire : validation, routes, sauvegarde, import et persistance. Une vérification manuelle du site publié reste nécessaire pour confirmer la communication entre le frontend et le backend hébergés.
+`npm run test:backend` exécute les tests de l’API Node.js (`backend/models/Pokemon.unit.test.js`, `backend/models/PokemonRepository.integration.test.js` et `backend/app.integration.test.js`) : 31 tests Jest avec de vraies requêtes HTTP sur l’application Express et une base SQLite temporaire (validation, routes, ajout, modification, suppression, import, CORS, persistance après redémarrage et erreur 503). Une vérification manuelle du site publié reste nécessaire pour confirmer la communication entre le frontend et le backend hébergés.
 
 Références : [Jest](https://jestjs.io/docs/getting-started), [React Testing Library](https://testing-library.com/docs/react-testing-library/setup/) et [user-event](https://testing-library.com/docs/user-event/setup/).

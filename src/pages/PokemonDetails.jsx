@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { useParams, Link, useLocation } from "react-router-dom";
+import { useParams, Link, useLocation, useNavigate } from "react-router-dom";
 import { getPokemonDetails } from "../services/api";
-import { getPokemonImage } from "../services/customPokemonApi";
+import { deleteCustomPokemon, getPokemonImage } from "../services/customPokemonApi";
 import { getPokemonSection, cleanText } from "../services/pokemonSections";
 import {
   Defense,
@@ -23,6 +23,10 @@ const unavailable = <Unavailable />;
 export default function PokeDetails() {
   const { id } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
   const returnTo = location.state?.returnTo || "/";
   const [state, setState] = useState({ id: null });
   const [abilities, setAbilities] = useState({ id: null });
@@ -123,16 +127,57 @@ export default function PokeDetails() {
   const next = !pokemon.isCustom && pokemon.id < 1025 ? pokemon.id + 1 : null;
   const image = getPokemonImage(pokemon);
 
+  async function handleDelete() {
+    setDeleting(true);
+    setDeleteError("");
+    try {
+      await deleteCustomPokemon(pokemon.id);
+      navigate(returnTo);
+    } catch {
+      setDeleteError("Impossible de supprimer cette création. Réessayez dans un instant.");
+      setDeleting(false);
+    }
+  }
+
   return (
     <div className="pokemon-page">
       <div className="detail-toolbar">
         <Link to={returnTo} className="back-link">
           ← Retour au Pokédex
         </Link>
-        <Link to="/add" className="action-button">
-          + Ajouter un Pokémon
-        </Link>
+        <div className="flex flex-wrap gap-3 items-center">
+          {pokemon.isCustom && (
+            <>
+              <Link to={`/poke/${pokemon.id}/edit`} className="action-button">
+                Modifier
+              </Link>
+              {!confirmDelete && (
+                <button className="action-button" onClick={() => setConfirmDelete(true)}>
+                  Supprimer
+                </button>
+              )}
+            </>
+          )}
+        </div>
       </div>
+      {pokemon.isCustom && confirmDelete && (
+        <div className="notice mb-4" role="alertdialog" aria-label="Confirmer la suppression">
+          <p>Supprimer définitivement « {pokemon.nom} » ? Cette action est irréversible.</p>
+          <div className="flex gap-3 mt-3">
+            <button className="action-button" disabled={deleting} onClick={handleDelete}>
+              {deleting ? "Suppression…" : "Oui, supprimer"}
+            </button>
+            <button
+              className="back-link"
+              disabled={deleting}
+              onClick={() => setConfirmDelete(false)}
+            >
+              Annuler
+            </button>
+          </div>
+          {deleteError && <p role="alert">{deleteError}</p>}
+        </div>
+      )}
       <article className="pokemon-dossier">
         <header className="dossier-header">
           <span className="eyebrow">{pokemon.isCustom ? "MA COLLECTION" : "POKÉDEX NATIONAL"}</span>

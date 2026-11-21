@@ -1,14 +1,43 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { TYPE_LABELS, STAT_LABELS } from "../data/translations";
-import { saveCustomPokemon } from "../services/customPokemonApi";
+import {
+  getCustomPokemon,
+  saveCustomPokemon,
+  updateCustomPokemon,
+} from "../services/customPokemonApi";
 
 const TYPES = Object.entries(TYPE_LABELS).filter(([key]) => !["unknown", "stellar"].includes(key));
+const PLACEHOLDER = "/pokemon-placeholder.svg";
 
+// Même formulaire pour l'ajout (/add) et la modification (/poke/:id/edit).
 export default function AddPokemon() {
+  const { id } = useParams();
+  const editing = Boolean(id);
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+  // Création à modifier : chargée depuis l'API uniquement en mode modification.
+  const [existing, setExisting] = useState(null);
+  const [loadError, setLoadError] = useState("");
+
+  useEffect(() => {
+    if (!editing) return;
+    let cancelled = false;
+    getCustomPokemon(id)
+      .then((data) => {
+        if (!cancelled) setExisting(data);
+      })
+      .catch(() => {
+        if (!cancelled) setLoadError("Impossible de charger cette création.");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [editing, id]);
+
+  const stat = (name) => existing?.stats?.find((entry) => entry.stat.name === name)?.base_stat;
+  const savedImage = existing?.sprites?.front_default;
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -22,7 +51,7 @@ export default function AddPokemon() {
     setError("");
     try {
       const types = [...new Set([form.get("type"), form.get("secondType")].filter(Boolean))];
-      const pokemon = await saveCustomPokemon({
+      const payload = {
         nom,
         name: nom.toLowerCase(),
         description: form.get("description").trim(),
@@ -31,11 +60,14 @@ export default function AddPokemon() {
         height: Number(form.get("height")) * 10,
         weight: Number(form.get("weight")) * 10,
         types: types.map((name) => ({ type: { name } })),
-        sprites: { front_default: image || "/pokemon-placeholder.svg" },
+        sprites: { front_default: image || PLACEHOLDER },
         stats: Object.keys(STAT_LABELS)
           .slice(0, 6)
           .map((name) => ({ stat: { name }, base_stat: Number(form.get(name)) })),
-      });
+      };
+      const pokemon = editing
+        ? await updateCustomPokemon(id, payload)
+        : await saveCustomPokemon(payload);
       navigate(`/poke/${pokemon.id}`);
     } catch (error) {
       setError(
@@ -47,17 +79,34 @@ export default function AddPokemon() {
     }
   }
 
+  if (editing && loadError)
+    return (
+      <div className="notice" role="alert">
+        <p>{loadError}</p>
+        <Link to="/" className="back-link">
+          Retour au Pokédex
+        </Link>
+      </div>
+    );
+  if (editing && !existing)
+    return (
+      <p role="status" className="detail-loading">
+        Chargement de la création…
+      </p>
+    );
+
   return (
     <div className="creation-page">
-      <Link to="/" className="back-link">
-        ← Retour au Pokédex
+      <Link to={editing ? `/poke/${id}` : "/"} className="back-link">
+        {editing ? "← Retour à la fiche" : "← Retour au Pokédex"}
       </Link>
       <header className="page-intro">
         <span className="eyebrow">VOTRE COLLECTION</span>
-        <h1>Créer un nouveau Pokémon</h1>
+        <h1>{editing ? `Modifier ${existing.nom}` : "Créer un nouveau Pokémon"}</h1>
         <p>
-          Imaginez votre compagnon et complétez sa fiche. Il sera enregistré dans la collection
-          partagée.
+          {editing
+            ? "Modifiez la fiche de votre création. Les changements sont enregistrés dans la collection partagée."
+            : "Imaginez votre compagnon et complétez sa fiche. Il sera enregistré dans la collection partagée."}
         </p>
       </header>
       <form onSubmit={handleSubmit} className="creation-form">
@@ -66,15 +115,30 @@ export default function AddPokemon() {
           <div className="form-grid">
             <label>
               Nom du Pokémon *
-              <input name="nom" required maxLength={60} placeholder="Ex. : Floréa" />
+              <input
+                name="nom"
+                required
+                maxLength={60}
+                placeholder="Ex. : Floréa"
+                defaultValue={existing?.nom}
+              />
             </label>
             <label>
               Catégorie
-              <input name="category" maxLength={80} placeholder="Ex. : Pokémon Bourgeon" />
+              <input
+                name="category"
+                maxLength={80}
+                placeholder="Ex. : Pokémon Bourgeon"
+                defaultValue={existing?.category}
+              />
             </label>
             <label>
               Type principal *
-              <select name="type" defaultValue="grass" required>
+              <select
+                name="type"
+                defaultValue={existing?.types?.[0]?.type.name || "grass"}
+                required
+              >
                 {TYPES.map(([key, value]) => (
                   <option key={key} value={key}>
                     {value}
@@ -84,7 +148,7 @@ export default function AddPokemon() {
             </label>
             <label>
               Type secondaire
-              <select name="secondType" defaultValue="">
+              <select name="secondType" defaultValue={existing?.types?.[1]?.type.name || ""}>
                 <option value="">Aucun</option>
                 {TYPES.map(([key, value]) => (
                   <option key={key} value={key}>
@@ -103,6 +167,7 @@ export default function AddPokemon() {
                 step="0.1"
                 required
                 placeholder="0,7"
+                defaultValue={existing ? existing.height / 10 : undefined}
               />
             </label>
             <label>
@@ -115,11 +180,18 @@ export default function AddPokemon() {
                 step="0.1"
                 required
                 placeholder="6,9"
+                defaultValue={existing ? existing.weight / 10 : undefined}
               />
             </label>
             <label className="full-width">
               Adresse de l’illustration
-              <input name="image" type="url" maxLength={2000} placeholder="https://…" />
+              <input
+                name="image"
+                type="url"
+                maxLength={2000}
+                placeholder="https://…"
+                defaultValue={savedImage && savedImage !== PLACEHOLDER ? savedImage : ""}
+              />
               <small>Facultatif. Une illustration par défaut est prévue.</small>
             </label>
             <label className="full-width">
@@ -129,6 +201,7 @@ export default function AddPokemon() {
                 rows={4}
                 maxLength={1500}
                 placeholder="Son habitat, son caractère, son histoire…"
+                defaultValue={existing?.description}
               />
             </label>
             <label className="full-width">
@@ -137,6 +210,7 @@ export default function AddPokemon() {
                 name="ability"
                 maxLength={120}
                 placeholder="Ex. : Absorbe la lumière pour retrouver de l’énergie"
+                defaultValue={existing?.customAbility}
               />
             </label>
           </div>
@@ -156,7 +230,7 @@ export default function AddPokemon() {
                     min="1"
                     max="255"
                     step="1"
-                    defaultValue={50}
+                    defaultValue={stat(key) ?? 50}
                     required
                   />
                 </label>
@@ -171,11 +245,15 @@ export default function AddPokemon() {
         <div className="form-actions">
           <span className="muted">* Champs obligatoires</span>
           <div className="flex gap-3 items-center">
-            <Link className="back-link" to="/">
+            <Link className="back-link" to={editing ? `/poke/${id}` : "/"}>
               Annuler
             </Link>
             <button className="action-button" type="submit" disabled={saving}>
-              {saving ? "Enregistrement…" : "+ Ajouter à mon Pokédex"}
+              {saving
+                ? "Enregistrement…"
+                : editing
+                ? "Enregistrer les modifications"
+                : "+ Ajouter à mon Pokédex"}
             </button>
           </div>
         </div>

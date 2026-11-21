@@ -1,16 +1,26 @@
-name: Vérification et déploiement du Pokédex
+name: CI/CD
 
+# Déclencheurs du cours : push et pull request sur main, dev et feature/**.
 on:
   push:
+    branches:
+      - main
+      - dev
+      - "feature/**"
   pull_request:
+    branches:
+      - main
+      - dev
+      - "feature/**"
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  frontend:
-    name: Qualité et tests du frontend
+  # 1. CI : les tests Jest (npm test) bloquent la suite si l'un d'eux échoue.
+  test:
+    name: Tests (frontend et API Node)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,9 +31,9 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run format:check
-      - name: Tests Jest et couverture du code
+      # Jest exécute les tests de src/ (frontend) et de backend/ (API Express + SQLite temporaire).
+      - name: Tests Jest avec couverture
         run: npm run test:coverage
-      - run: npm run build
       - name: Conserver le rapport de couverture
         if: always()
         uses: actions/upload-artifact@v4
@@ -32,30 +42,30 @@ jobs:
           path: coverage/
           retention-days: 7
 
-  backend:
-    name: Vérification de l’API et de la persistance
+  # 2. Build : ne démarre que si les tests réussissent (needs).
+  build:
+    name: Build de production
+    needs: test
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
     steps:
       - uses: actions/checkout@v4
-      - uses: shivammathur/setup-php@v2
+      - uses: actions/setup-node@v4
         with:
-          php-version: "8.3"
-          extensions: pdo_sqlite, mbstring
-          coverage: none
-      - run: composer install --no-interaction --prefer-dist --no-progress
-      - run: composer validate --strict
-      - run: composer test
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: build/
+          retention-days: 7
 
+  # 3. CD : déploiement sur Vercel seulement sur main, après le build.
   deploy:
-    name: Déploiement Vercel après validation
-    needs: [frontend, backend]
-    if: >-
-      github.event_name == 'push' &&
-      github.ref_name == (vars.PRODUCTION_BRANCH || 'main') &&
-      vars.DEPLOY_ENABLED == 'true'
+    name: Déploiement Vercel
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && vars.DEPLOY_ENABLED == 'true'
     runs-on: ubuntu-latest
     concurrency:
       group: deploiement-production
@@ -70,17 +80,13 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - name: Vérifier la configuration de publication
+      - name: Vérifier les secrets Vercel
         run: |
           test -n "$VERCEL_TOKEN" || { echo "Secret VERCEL_TOKEN manquant"; exit 1; }
           test -n "$VERCEL_ORG_ID" || { echo "Secret VERCEL_ORG_ID manquant"; exit 1; }
           test -n "$VERCEL_PROJECT_ID" || { echo "Secret VERCEL_PROJECT_ID manquant"; exit 1; }
       - run: npm ci
-      - name: Installer la CLI Vercel
-        run: npm install --global vercel@latest
-      - name: Récupérer les paramètres de production
-        run: vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
-      - name: Construire les fichiers de production
-        run: vercel build --prod --token="$VERCEL_TOKEN"
-      - name: Publier les fichiers validés
-        run: vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"
+      - run: npm install --global vercel@latest
+      - run: vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+      - run: vercel build --prod --token="$VERCEL_TOKEN"
+      - run: vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"

@@ -1,28 +1,21 @@
 # Vérification locale du projet
 
-Date : 16 novembre 2026.
+Date : 21 novembre 2026.
 
 ## Résultats observés
 
-| Vérification                | Résultat                                                                                          |
-| --------------------------- | ------------------------------------------------------------------------------------------------- |
-| ESLint                      | Aucune erreur.                                                                                    |
-| Tests unitaires             | 4 tests Jest réussis : statistiques maximales et multiplicateurs de défense.                      |
-| Tests de services           | 9 tests Jest réussis avec appels Axios mockés.                                                    |
-| Tests fonctionnels frontend | 8 tests Jest et Testing Library réussis : recherche et formulaire de création dans jsdom.         |
-| Tests fonctionnels backend  | 29 vérifications réussies avec Symfony et une base SQLite temporaire.                             |
-| Configuration Composer      | `composer validate --strict` valide la cohérence du manifeste et du verrouillage.                 |
-| Build Vite                  | Réussi ; pages Home, AddPokemon, PokemonDetails et NotFound produites dans des modules distincts. |
+| Vérification                | Résultat                                                                                                               |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| ESLint                      | Aucune erreur.                                                                                                         |
+| Tests unitaires             | 4 tests Jest réussis : statistiques maximales et multiplicateurs de défense.                                           |
+| Tests de services           | 13 tests Jest réussis avec appels Axios mockés.                                                                        |
+| Tests fonctionnels frontend | 19 tests Jest et Testing Library réussis : recherche, pagination, menu, ajout, modification et suppression dans jsdom. |
+| Tests backend (Node.js)     | 31 tests Jest réussis : modèle, base SQLite et requêtes HTTP réelles sur Express et base SQLite temporaire.            |
+| Build Vite                  | Réussi ; pages Home, AddPokemon, PokemonDetails et NotFound produites dans des modules distincts.                      |
 
-Les 21 tests frontend sont exécutés avec `npm test`, via Jest. Les suites sont regroupées avec `describe` et `it`, les résultats sont vérifiés avec `expect` et les interactions utilisent Testing Library. `npm run test:coverage` produit le rapport HTML dans `coverage/index.html`.
+Les 67 tests (36 frontend et 31 backend) sont exécutés avec `npm test`, via Jest. Les suites sont regroupées avec `describe` et `it`, les résultats sont vérifiés avec `expect` et les interactions utilisent Testing Library. `npm run test:coverage` produit le rapport HTML dans `coverage/index.html`.
 
 Le premier rapport, avant les deux tests de non-régression des erreurs de plateforme, mesurait 30,81 % des lignes du frontend : les calculs de statistiques et le service du catalogue sont couverts à 100 % des lignes, mais plusieurs écrans restent non couverts. Ce pourcentage décrit la portée actuelle des tests et ne garantit pas l’absence de bugs.
-
-Sur ce poste, PHP ne charge pas SQLite par défaut. La commande utilisée pour les vérifications backend est :
-
-```bash
-php -d extension=pdo_sqlite -d xdebug.mode=off backend/tests/api.php
-```
 
 ## Portée et limites
 

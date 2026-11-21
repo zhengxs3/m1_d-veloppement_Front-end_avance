@@ -1,10 +1,39 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter, useLocation } from "react-router-dom";
-import AddPokemon from "../../src/pages/AddPokemon";
-import { saveCustomPokemon } from "../../src/services/customPokemonApi";
+import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
+import AddPokemon from "./AddPokemon";
+import {
+  getCustomPokemon,
+  saveCustomPokemon,
+  updateCustomPokemon,
+} from "../services/customPokemonApi";
 
-jest.mock("../../src/services/customPokemonApi", () => ({ saveCustomPokemon: jest.fn() }));
+jest.mock("../services/customPokemonApi", () => ({
+  getCustomPokemon: jest.fn(),
+  saveCustomPokemon: jest.fn(),
+  updateCustomPokemon: jest.fn(),
+}));
+
+const stats = ["hp", "attack", "defense", "special-attack", "special-defense", "speed"].map(
+  (name) => ({ stat: { name }, base_stat: 80 }),
+);
+const creation = {
+  id: "perso-florea",
+  isCustom: true,
+  nom: "Floréa",
+  description: "Une fleur.",
+  category: "Pokémon Bourgeon",
+  customAbility: "",
+  height: 7,
+  weight: 69,
+  types: [{ type: { name: "grass" } }],
+  sprites: { front_default: "/pokemon-placeholder.svg" },
+  stats,
+};
 
 function AdresseActuelle() {
   const location = useLocation();
@@ -17,7 +46,7 @@ async function remplirFormulaire(utilisateur) {
   await utilisateur.type(screen.getByLabelText("Poids (kg) *"), "6.9");
 }
 
-describe("AddPokemon — tests fonctionnels du formulaire", () => {
+describe("AddPokemon Integration Test Suites (ajout)", () => {
   beforeEach(() => {
     saveCustomPokemon.mockReset();
     render(
@@ -99,5 +128,52 @@ describe("AddPokemon — tests fonctionnels du formulaire", () => {
     expect(screen.getByLabelText("Nom du Pokémon *")).toHaveValue("Floréa");
     expect(screen.getByLabelText("Adresse actuelle")).toHaveTextContent("/add");
     expect(screen.getByRole("button", { name: /Ajouter à mon Pokédex/ })).toBeEnabled();
+  });
+});
+
+describe("AddPokemon Integration Test Suites (modification)", () => {
+  beforeEach(() => {
+    getCustomPokemon.mockResolvedValue(creation);
+    updateCustomPokemon.mockResolvedValue({ ...creation, nom: "Floréa 2" });
+    render(
+      <MemoryRouter initialEntries={["/poke/perso-florea/edit"]}>
+        <Routes>
+          <Route path="/poke/:id/edit" element={<AddPokemon />} />
+          <Route path="/poke/:id" element={<p>Fiche</p>} />
+        </Routes>
+        <AdresseActuelle />
+      </MemoryRouter>,
+    );
+  });
+
+  it("pré-remplit le formulaire avec les valeurs de la création", async () => {
+    // Given : une création existante est chargée depuis l’API simulée.
+    // When : la page de modification s’affiche.
+    const nom = await screen.findByLabelText("Nom du Pokémon *");
+    // Then : les champs reprennent les valeurs enregistrées (taille et poids en m et kg).
+    expect(nom).toHaveValue("Floréa");
+    expect(screen.getByLabelText("Taille (m) *")).toHaveValue(0.7);
+    expect(screen.getByLabelText("Poids (kg) *")).toHaveValue(6.9);
+    expect(getCustomPokemon).toHaveBeenCalledWith("perso-florea");
+  });
+
+  it("envoie la modification avec l’identifiant puis retourne à la fiche", async () => {
+    // Given : le formulaire est pré-rempli et l’utilisateur change le nom.
+    const utilisateur = userEvent.setup();
+    const nom = await screen.findByLabelText("Nom du Pokémon *");
+    await utilisateur.clear(nom);
+    await utilisateur.type(nom, "Floréa 2");
+
+    // When : il enregistre les modifications.
+    await utilisateur.click(screen.getByRole("button", { name: "Enregistrer les modifications" }));
+
+    // Then : le service reçoit l’identifiant et le nouveau nom, puis la fiche s’affiche.
+    expect(updateCustomPokemon).toHaveBeenCalledWith(
+      "perso-florea",
+      expect.objectContaining({ nom: "Floréa 2", height: 7, weight: 69 }),
+    );
+    await waitFor(() =>
+      expect(screen.getByLabelText("Adresse actuelle")).toHaveTextContent("/poke/perso-florea"),
+    );
   });
 });

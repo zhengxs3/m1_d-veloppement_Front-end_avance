@@ -23,7 +23,11 @@ export default defineConfig([
     languageOptions: { globals: globals.node, sourceType: "commonjs" },
   },
   {
-    files: ["tests/**/*.{js,jsx}"],
+    files: ["backend/**/*.js"],
+    languageOptions: { globals: globals.node },
+  },
+  {
+    files: ["jest.setup.js", "**/*.test.{js,jsx}"],
     languageOptions: { globals: { ...globals.node, ...globals.jest } },
   },
 ]);

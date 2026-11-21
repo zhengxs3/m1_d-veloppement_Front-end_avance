@@ -33,6 +33,8 @@ function App() {
 
             {/* Page d'ajout de Pokémon */}
             <Route path="/add" element={<AddPokemon />} />
+            {/* Modification d'une création personnelle */}
+            <Route path="/poke/:id/edit" element={<AddPokemon />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>

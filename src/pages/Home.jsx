@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { getPokemons, getPokemonDetails, getPokemonsByType } from "../services/api";
 import PokeCard from "../components/molecules/PokeCard";
 import Pagination from "../components/molecules/Pagination";
@@ -116,9 +116,6 @@ function Home() {
           <span className="eyebrow">EXPLORER ET COLLECTIONNER</span>
           <h1 className="text-3xl font-bold">Liste des Pokémon</h1>
         </div>
-        <Link to="/add" className="action-button">
-          + Ajouter un Pokémon
-        </Link>
       </div>
 
       {/* Afficher les Pokémon du type sélectionné. */}
