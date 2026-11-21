@@ -67,9 +67,11 @@ function Home() {
             return {
               id: data.id,
               nom: data.nom,
+              // Petite image (96 px, environ 1 Ko) : la carte affiche 128 px. L'illustration
+              // officielle (environ 120 Ko) est réservée à la fiche détaillée.
               image:
-                data.sprites.other?.["official-artwork"]?.front_default ||
-                data.sprites.front_default,
+                data.sprites.front_default ||
+                data.sprites.other?.["official-artwork"]?.front_default,
               element: data.types
                 .map((type) => TYPE_LABELS[type.type.name] || "Inconnu")
                 .join(", "),

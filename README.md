@@ -109,7 +109,7 @@ Chaque contrôleur est une fonction exportée (`getPokemons`, `createPokemon`…
 
 `getResource` mémorise les promesses HTTP dans une `Map` : deux appels pour une même ressource partagent la requête et la réponse. Une promesse rejetée est retirée du cache pour permettre une nouvelle tentative. Ce cache est limité à la session et au module chargé ; il n’expire pas automatiquement.
 
-Les cartes réservent la place des images avec `width` et `height`. Les premières images sont chargées immédiatement et les suivantes utilisent `loading="lazy"`. La recherche récupère les noms du catalogue, puis charge uniquement les fiches de la page visible. Les pages et rubriques sont chargées à la demande.
+Les cartes de la liste affichent la petite image du Pokémon (96 px, environ 1 Ko) au lieu de l’illustration officielle (environ 120 Ko) : une page de 12 cartes passe d’environ 1,5 Mo d’images à environ 15 Ko. La fiche détaillée charge toujours l’illustration officielle. Les cartes réservent la place des images avec `width` et `height`. Les premières images sont chargées immédiatement et les suivantes utilisent `loading="lazy"`. La recherche récupère les noms du catalogue, puis charge uniquement les fiches de la page visible. Les pages et rubriques sont chargées à la demande.
 
 ### KISS et qualité
 
