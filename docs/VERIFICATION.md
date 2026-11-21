@@ -21,6 +21,6 @@ Le premier rapport, avant les deux tests de non-régression des erreurs de plate
 
 Les tests fonctionnels Jest utilisent jsdom et des services mockés pour vérifier le comportement du frontend, sans navigateur réel. Les tests backend utilisent une vraie base temporaire et vérifient la persistance. Ces deux suites ne prouvent pas que les serveurs de production communiquent correctement.
 
-Le workflow de CI/CD est configuré dans le dépôt local. Son exécution sur GitHub et le déploiement Vercel ne sont pas attestés par ces vérifications locales. Le site public, le backend hébergé, les secrets Vercel et la branche de production doivent être renseignés et validés avant la remise.
+Le workflow de CI/CD s’est exécuté sur GitHub Actions : les jobs de tests et de build ont réussi, et le job de déploiement est ignoré tant que la variable `DEPLOY_ENABLED` n’est pas définie (le frontend est publié par l’intégration Git native de Vercel).
 
-Le README indique explicitement ces éléments restants, ainsi que le nom et le prénom de l’auteur à compléter. Il ne revendique pas une note ni une mise en ligne non vérifiée.
+Le 21 novembre 2026, le backend hébergé sur Render a été vérifié avec de vraies requêtes HTTP : santé, règles CORS pour l’adresse Vercel, puis ajout, lecture, modification et suppression d’une création. Le frontend publié contient l’adresse de ce backend. Une vérification manuelle dans le navigateur sur le site public reste utile avant la remise. Le backend gratuit de Render se met en veille et ne conserve pas sa base SQLite après un redéploiement.

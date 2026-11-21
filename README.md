@@ -5,11 +5,11 @@ Application React en français pour explorer les Pokémon de PokéAPI et créer,
 ## Livrables
 
 - Dépôt GitHub : [m1_d-veloppement_Front-end_avance](https://github.com/zhengxs3/m1_d-veloppement_Front-end_avance).
-- Site en ligne : **adresse à renseigner après le déploiement effectif**.
-- Backend en ligne : **adresse à renseigner après le déploiement effectif**.
-- Auteur : **nom et prénom à compléter avant la remise**.
+- Site en ligne (Vercel) : [m1-d-veloppement-front-end-avance-peach.vercel.app](https://m1-d-veloppement-front-end-avance-peach.vercel.app).
+- Backend en ligne (Render) : [pokedex-api-dcpq.onrender.com](https://pokedex-api-dcpq.onrender.com), vérification sur [/api/health](https://pokedex-api-dcpq.onrender.com/api/health).
+- Auteur : ZHENG Xinshen.
 
-La configuration de déploiement ne prouve pas que le site est en ligne. Le formulaire de création nécessite un backend Node.js accessible depuis le site publié.
+Le frontend est publié par Vercel à chaque push sur `main`. Le backend Node.js est hébergé sur l’offre gratuite de Render : il se met en veille après une période d’inactivité (le premier appel peut prendre 30 à 60 secondes) et sa base SQLite est réinitialisée à chaque redéploiement. Avant une démonstration, ouvrir `/api/health` pour le réveiller. Le formulaire de création, de modification et de suppression nécessite ce backend.
 
 ## Installation et démarrage
 
@@ -47,7 +47,7 @@ Les tests du backend s’exécutent avec `npm run test:backend` (ou `npm test` p
 
 | Critère                                            | Réalisation ou condition restante                                                                                                                                                             |
 | -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Site en ligne                                      | Configuration Vercel présente. Adresse publique et fonctionnement du backend à confirmer avant la remise.                                                                                     |
+| Site en ligne                                      | Frontend publié sur Vercel (branche `main`) ; backend Node.js hébergé sur Render.                                                                                                             |
 | Pipeline CI/CD                                     | `.github/workflows/ci.yml` vérifie le frontend et le backend ; le déploiement dépend du succès des deux jobs et de la configuration des secrets.                                              |
 | 2 tests unitaires et 2 tests fonctionnels minimum  | Jest : 4 tests unitaires, 15 tests de services mockés et 24 tests fonctionnels (interface) avec Testing Library et jsdom. Le backend Node.js possède aussi 31 tests (API REST et validation). |
 | Optimisation des performances                      | `React.lazy`, `Suspense`, cache des ressources et rubriques de détail chargées à la demande.                                                                                                  |
