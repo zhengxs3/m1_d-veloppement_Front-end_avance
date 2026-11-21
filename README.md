@@ -66,7 +66,7 @@ Le tableau indique les éléments implémentés ; la note finale dépend de la v
 | -------------------------------------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Site en ligne                                      | 1      | Configuration Vercel présente. Adresse publique et fonctionnement du backend à confirmer avant la remise.                                                                                     |
 | Pipeline CI/CD                                     | 2      | `.github/workflows/ci.yml` vérifie le frontend et le backend ; le déploiement dépend du succès des deux jobs et de la configuration des secrets.                                              |
-| 2 tests unitaires et 2 tests fonctionnels minimum  | 2      | Jest : 4 tests unitaires, 13 tests de services mockés et 19 tests fonctionnels (interface) avec Testing Library et jsdom. Le backend Node.js possède aussi 31 tests (API REST et validation). |
+| 2 tests unitaires et 2 tests fonctionnels minimum  | 2      | Jest : 4 tests unitaires, 15 tests de services mockés et 24 tests fonctionnels (interface) avec Testing Library et jsdom. Le backend Node.js possède aussi 31 tests (API REST et validation). |
 | Optimisation des performances                      | 1      | `React.lazy`, `Suspense`, cache des ressources et rubriques de détail chargées à la demande.                                                                                                  |
 | KISS et qualité du code                            | 1      | Responsabilités séparées, fonctions pures, composants réutilisables, ESLint et Prettier.                                                                                                      |
 | Gestion d’état moderne                             | 1      | État de navigation dans l’URL avec `useSearchParams` ; état local avec les hooks.                                                                                                             |
@@ -152,12 +152,12 @@ npm run test:coverage
 npm run build
 ```
 
-| Niveau               | Commande                   | Vérifications                                                                                                                             |
-| -------------------- | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| Unitaire             | `npm run test:unit`        | 4 tests Jest : statistiques maximales et combinaison des faiblesses/résistances/immunités.                                                |
-| Services             | `npm run test:integration` | 13 tests Jest : cache, nouvelle tentative, sauvegarde, modification, suppression et import avec les appels Axios mockés.                  |
-| Fonctionnel frontend | `npm run test:functional`  | 19 tests Jest et Testing Library : recherche, pagination, menu (snapshot), ajout, modification, suppression avec confirmation et erreurs. |
-| Fonctionnel backend  | `npm run test:backend`     | 31 tests Jest (Express et SQLite via sql.js, base temporaire) : routes, validation, ajout, modification, suppression, imports et CORS.    |
+| Niveau               | Commande                   | Vérifications                                                                                                                                                            |
+| -------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Unitaire             | `npm run test:unit`        | 4 tests Jest : statistiques maximales et combinaison des faiblesses/résistances/immunités.                                                                               |
+| Services             | `npm run test:integration` | 15 tests Jest : cache, nouvelle tentative, sauvegarde, modification, suppression et import avec les appels Axios mockés.                                                 |
+| Fonctionnel frontend | `npm run test:functional`  | 24 tests Jest et Testing Library : recherche, pagination, menu (snapshot), étiquettes de type cliquables, ajout, modification, suppression avec confirmation et erreurs. |
+| Fonctionnel backend  | `npm run test:backend`     | 31 tests Jest (Express et SQLite via sql.js, base temporaire) : routes, validation, ajout, modification, suppression, imports et CORS.                                   |
 
 Comme dans les exemples du cours, chaque test est placé à côté du fichier qu’il vérifie (`stats.js` → `stats.unit.test.js`, `Pagination.jsx` → `Pagination.integration.test.jsx`) ; les fichiers DOM déclarent `@jest-environment jsdom`. Les tests suivent la méthode du cours : `describe`, `it`, `expect`, mocks, `beforeEach` et scénarios Given / When / Then. Testing Library simule les interactions dans jsdom ; aucun navigateur réel ni serveur externe n’est nécessaire. Les tests backend vérifient séparément le stockage réel. Voir [le guide des tests](docs/TESTS.md) pour les scénarios, les commandes et le rapport de couverture.
 
@@ -186,7 +186,7 @@ La sortie Vite est `build`. `vercel.json` permet l’accès direct aux routes de
 5. Présenter les tests, l’exécution GitHub Actions et le déploiement réussi.
 6. Expliquer CSR, le découpage des pages, le cache, l’état dans l’URL et Atomic Design.
 
-La recherche officielle utilise les identifiants PokéAPI, par exemple « pika », même si les noms affichés sont français. Les créations sont partagées entre les visiteurs du même backend. Cette version scolaire n’a pas d’authentification. Les anciennes créations du navigateur peuvent être importées explicitement sans effacer les originaux.
+Les Pokémon officiels s’affichent avec leur nom anglais de PokéAPI suivi du nom français entre parenthèses (par exemple « Koffing (Smogo) »). La recherche porte sur le nom anglais (« pika » trouve Pikachu) ; une aide sous le champ de recherche le rappelle. Le reste de l’interface reste en français. Les créations sont partagées entre les visiteurs du même backend. Cette version scolaire n’a pas d’authentification. Les anciennes créations du navigateur peuvent être importées explicitement sans effacer les originaux.
 
 ## Références
 

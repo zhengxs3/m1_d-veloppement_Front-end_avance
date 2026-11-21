@@ -23,6 +23,15 @@ describe("SearchBar Integration Test Suites", () => {
     );
   });
 
+  it("indique que la recherche se fait par nom anglais", () => {
+    // Given : le formulaire de recherche vient d’être affiché.
+    // Then : une aide visible précise la langue et elle est liée au champ de saisie.
+    expect(screen.getByText(/La recherche se fait par nom anglais/)).toBeInTheDocument();
+    expect(
+      screen.getByRole("textbox", { name: "Rechercher un Pokémon" }),
+    ).toHaveAccessibleDescription(/nom anglais/);
+  });
+
   it("ne lance pas de recherche avant une action de l’utilisateur", () => {
     // Given : le formulaire de recherche vient d’être affiché.
     // When : l’utilisateur n’a encore effectué aucune action.

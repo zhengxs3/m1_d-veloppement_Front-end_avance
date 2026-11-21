@@ -215,7 +215,7 @@ export default function PokeDetails() {
             <p className="pokemon-category">{category}</p>
             <div className="flex flex-wrap gap-2 mt-4 mb-6">
               {pokemon.types.map(({ type }) => (
-                <TypeBadge key={type.name} type={type.name} />
+                <TypeBadge key={type.name} type={type.name} linked />
               ))}
             </div>
             <dl className="overview-metrics">

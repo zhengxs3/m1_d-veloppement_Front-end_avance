@@ -7,21 +7,53 @@ describe("api Integration Test Suites", () => {
     jest.spyOn(customApi, "get").mockRejectedValue(new Error("Serveur indisponible"));
   });
 
-  it("retourne le nom français mocké et réutilise les ressources déjà chargées", async () => {
+  it("retourne le nom anglais suivi du nom français et réutilise les ressources déjà chargées", async () => {
     // Given : les réponses mockées du Pokémon et de son espèce.
     api.get.mockResolvedValueOnce({ data: { id: 1, species: { url: "/pokemon-species/1" } } });
     api.get.mockResolvedValueOnce({
-      data: { names: [{ language: { name: "fr" }, name: "Bulbizarre" }] },
+      data: {
+        names: [
+          { language: { name: "fr" }, name: "Bulbizarre" },
+          { language: { name: "en" }, name: "Bulbasaur" },
+        ],
+      },
     });
     // When : la même fiche est demandée deux fois.
     const premiere = await getPokemonDetails(1);
     const seconde = await getPokemonDetails(1);
-    // Then : le nom français est retourné et chaque ressource est demandée une seule fois.
-    expect(premiere.data.nom).toBe("Bulbizarre");
+    // Then : le nom est « anglais (français) » et chaque ressource est demandée une seule fois.
+    expect(premiere.data.nom).toBe("Bulbasaur (Bulbizarre)");
     expect(seconde).toEqual(premiere);
     expect(api.get).toHaveBeenCalledTimes(2);
     expect(api.get).toHaveBeenNthCalledWith(1, "/pokemon/1");
     expect(api.get).toHaveBeenNthCalledWith(2, "/pokemon-species/1");
+  });
+
+  it("n'affiche qu'un seul nom quand les noms anglais et français sont identiques", async () => {
+    // Given : une espèce dont le nom est le même dans les deux langues.
+    api.get.mockResolvedValueOnce({ data: { id: 243, species: { url: "/pokemon-species/243" } } });
+    api.get.mockResolvedValueOnce({
+      data: {
+        names: [
+          { language: { name: "fr" }, name: "Raikou" },
+          { language: { name: "en" }, name: "Raikou" },
+        ],
+      },
+    });
+    // When : la fiche est demandée.
+    const fiche = await getPokemonDetails(243);
+    // Then : le nom n'est pas répété entre parenthèses.
+    expect(fiche.data.nom).toBe("Raikou");
+  });
+
+  it("met en forme le nom technique quand aucune traduction anglaise n'existe", async () => {
+    // Given : une espèce sans liste de noms.
+    api.get.mockResolvedValueOnce({ data: { id: 122, species: { url: "/pokemon-species/122" } } });
+    api.get.mockResolvedValueOnce({ data: { name: "mr-mime" } });
+    // When : la fiche est demandée.
+    const fiche = await getPokemonDetails(122);
+    // Then : le nom technique devient un nom lisible.
+    expect(fiche.data.nom).toBe("Mr Mime");
   });
 
   it("permet de relancer une requête après un échec", async () => {

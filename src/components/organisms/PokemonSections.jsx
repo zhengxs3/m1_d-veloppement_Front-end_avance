@@ -26,7 +26,7 @@ export function Defense({ defenses }) {
                 matches.map(({ type, multiplier }) => (
                   <div key={type}>
                     <strong>×{String(multiplier).replace(".", ",")}</strong>
-                    <TypeBadge type={type} />
+                    <TypeBadge type={type} linked />
                   </div>
                 ))
               ) : (
@@ -97,7 +97,7 @@ export function Moves({ moves }) {
           <article className="move-card" key={move.id}>
             <div className="move-heading">
               <h4>{move.nom}</h4>
-              <TypeBadge type={move.type} />
+              <TypeBadge type={move.type} linked />
             </div>
             <p className="muted">{move.description}</p>
             <dl className="move-values">

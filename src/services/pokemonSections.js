@@ -1,4 +1,4 @@
-import { frenchName, getResource } from "./api.js";
+import { frenchName, getResource, pokemonName } from "./api.js";
 import { TYPE_LABELS } from "../data/translations.js";
 
 const frenchText = (entries = []) => entries.find((entry) => entry.language.name === "fr");
@@ -52,7 +52,7 @@ async function getEvolution(chainUrl) {
         id: species.id,
         key: node.species.name,
         parent,
-        nom: frenchName(species),
+        nom: pokemonName(species),
         condition,
       };
     }),
