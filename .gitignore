@@ -40,3 +40,6 @@ build/
 
 # Rapports de couverture des tests Jest
 coverage/
+
+# Document du sujet (non versionné)
+grille*.pdf

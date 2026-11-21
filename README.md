@@ -1,6 +1,6 @@
 # Mon Pokédex — Développement frontend avancé
 
-Application React en français pour explorer les Pokémon de PokéAPI et créer ses propres fiches. Ce projet est organisé selon la grille « TP POKEDEX — Projet initial et Extended » fournie avec le sujet.
+Application React en français pour explorer les Pokémon de PokéAPI et créer, modifier et supprimer ses propres fiches.
 
 ## Livrables
 
@@ -43,35 +43,18 @@ Si le catalogue officiel s’affiche mais que « Créations partagées » est in
 
 Les tests du backend s’exécutent avec `npm run test:backend` (ou `npm test` pour tout le projet).
 
-## Projet initial : correspondance avec la grille /20
+## Extension : fonctionnalités
 
-| Critère                   | Points | Réalisation et preuve                                                                                                                                                                                     |
-| ------------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Liste des Pokémon         | 2      | `src/pages/Home.jsx` affiche les cartes du catalogue et la collection de créations.                                                                                                                       |
-| Navigation liste ↔ détail | 2      | `PokeCard` ouvre `/poke/:id` ; le retour restitue la page et les filtres de départ.                                                                                                                       |
-| Formulaire d’ajout        | 2      | `src/pages/AddPokemon.jsx` valide les champs, attend la sauvegarde, puis ouvre la fiche créée ; le même formulaire sert à modifier (`/poke/:id/edit`) et la fiche permet de supprimer, avec confirmation. |
-| Menu global               | 2      | `src/components/organisms/Navbar.jsx`, affiché en dehors des routes.                                                                                                                                      |
-| React Router              | 2      | `BrowserRouter` dans `main.jsx`, `Routes` et `Route` dans `App.jsx` ; routes `/`, `/add`, `/poke/:id` et page 404.                                                                                        |
-| API REST                  | 2      | PokéAPI pour le catalogue ; API Node.js (Express) pour les créations partagées.                                                                                                                           |
-| Axios GET et POST         | 2      | `src/services/api.js` effectue les GET ; `customPokemonApi.js` effectue les GET et POST des créations.                                                                                                    |
-| Pagination client         | 2      | `Home` pilote les boutons précédente/suivante, avec 12 éléments par page. La liste non filtrée utilise `limit`/`offset` de l’API ; les recherches et filtres sont découpés côté client avec `slice`.      |
-| Hooks React               | 2      | `useState` pour l’état local et `useEffect` pour les chargements et leur nettoyage.                                                                                                                       |
-| Composants séparés        | 2      | Atomes, molécules et organismes assemblés dans les pages.                                                                                                                                                 |
-
-Le tableau indique les éléments implémentés ; la note finale dépend de la vérification de l’enseignant.
-
-## Extension : correspondance avec la grille /10
-
-| Critère                                            | Points | Réalisation ou condition restante                                                                                                                                                             |
-| -------------------------------------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Site en ligne                                      | 1      | Configuration Vercel présente. Adresse publique et fonctionnement du backend à confirmer avant la remise.                                                                                     |
-| Pipeline CI/CD                                     | 2      | `.github/workflows/ci.yml` vérifie le frontend et le backend ; le déploiement dépend du succès des deux jobs et de la configuration des secrets.                                              |
-| 2 tests unitaires et 2 tests fonctionnels minimum  | 2      | Jest : 4 tests unitaires, 15 tests de services mockés et 24 tests fonctionnels (interface) avec Testing Library et jsdom. Le backend Node.js possède aussi 31 tests (API REST et validation). |
-| Optimisation des performances                      | 1      | `React.lazy`, `Suspense`, cache des ressources et rubriques de détail chargées à la demande.                                                                                                  |
-| KISS et qualité du code                            | 1      | Responsabilités séparées, fonctions pures, composants réutilisables, ESLint et Prettier.                                                                                                      |
-| Gestion d’état moderne                             | 1      | État de navigation dans l’URL avec `useSearchParams` ; état local avec les hooks.                                                                                                             |
-| Stratégie de rendu moderne expliquée               | 1      | SPA avec rendu côté client (CSR) et découpage du code par route, détaillés ci-dessous.                                                                                                        |
-| Atomic Design et/ou Feature-Sliced Design expliqué | 1      | Organisation effective selon Atomic Design, détaillée ci-dessous.                                                                                                                             |
+| Critère                                            | Réalisation ou condition restante                                                                                                                                                             |
+| -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Site en ligne                                      | Configuration Vercel présente. Adresse publique et fonctionnement du backend à confirmer avant la remise.                                                                                     |
+| Pipeline CI/CD                                     | `.github/workflows/ci.yml` vérifie le frontend et le backend ; le déploiement dépend du succès des deux jobs et de la configuration des secrets.                                              |
+| 2 tests unitaires et 2 tests fonctionnels minimum  | Jest : 4 tests unitaires, 15 tests de services mockés et 24 tests fonctionnels (interface) avec Testing Library et jsdom. Le backend Node.js possède aussi 31 tests (API REST et validation). |
+| Optimisation des performances                      | `React.lazy`, `Suspense`, cache des ressources et rubriques de détail chargées à la demande.                                                                                                  |
+| KISS et qualité du code                            | Responsabilités séparées, fonctions pures, composants réutilisables, ESLint et Prettier.                                                                                                      |
+| Gestion d’état moderne                             | État de navigation dans l’URL avec `useSearchParams` ; état local avec les hooks.                                                                                                             |
+| Stratégie de rendu moderne expliquée               | SPA avec rendu côté client (CSR) et découpage du code par route, détaillés ci-dessous.                                                                                                        |
+| Atomic Design et/ou Feature-Sliced Design expliqué | Organisation effective selon Atomic Design, détaillée ci-dessous.                                                                                                                             |
 
 ## Stratégie de rendu : CSR et chargement à la demande
 
