@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getPokemons, getPokemonDetails, getPokemonsByType } from "../services/api";
+import { getPokemonImage } from "../services/customPokemonApi";
 import PokeCard from "../components/molecules/PokeCard";
 import Pagination from "../components/molecules/Pagination";
 import SearchBar from "../components/molecules/SearchBar";
@@ -67,11 +68,7 @@ function Home() {
             return {
               id: data.id,
               nom: data.nom,
-              // Petite image (96 px, environ 1 Ko) : la carte affiche 128 px. L'illustration
-              // officielle (environ 120 Ko) est réservée à la fiche détaillée.
-              image:
-                data.sprites.front_default ||
-                data.sprites.other?.["official-artwork"]?.front_default,
+              image: getPokemonImage(data),
               element: data.types
                 .map((type) => TYPE_LABELS[type.type.name] || "Inconnu")
                 .join(", "),
